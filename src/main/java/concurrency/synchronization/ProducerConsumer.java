@@ -55,32 +55,33 @@ public class ProducerConsumer {
     }
 
     public static void main(String[] args) {
-        int t = 8;
-        int n = 100_000;
-        int numElementsPerThread = n / t;
-        Thread[] producers = new Thread[t];
-        Thread[] consumers = new Thread[t];
+        for (int t : new int[]{1, 2, 4, 8, 16}) {
+            int n = 100_000;
+            int numElementsPerThread = n / t;
+            Thread[] producers = new Thread[t];
+            Thread[] consumers = new Thread[t];
 
-        for (int i = 0; i < t; i++) {
-            producers[i] = new Thread(new Producer(i, numElementsPerThread));
-            consumers[i] = new Thread(new Consumer(i, numElementsPerThread));
-        }
-        long time = System.currentTimeMillis();
-        // Start threads
-        for (int i = 0; i < t; i++) {
-            producers[i].start();
-            consumers[i].start();
-        }
-
-        // Wait for threads completion
-        for (int i = 0; i < t; i++) {
-            try {
-                producers[i].join();
-                consumers[i].join();
-            } catch (InterruptedException e) {
+            for (int i = 0; i < t; i++) {
+                producers[i] = new Thread(new Producer(i, numElementsPerThread));
+                consumers[i] = new Thread(new Consumer(i, numElementsPerThread));
             }
+            long time = System.currentTimeMillis();
+            // Start threads
+            for (int i = 0; i < t; i++) {
+                producers[i].start();
+                consumers[i].start();
+            }
+
+            // Wait for threads completion
+            for (int i = 0; i < t; i++) {
+                try {
+                    producers[i].join();
+                    consumers[i].join();
+                } catch (InterruptedException e) {
+                }
+            }
+            time = System.currentTimeMillis() - time;
+            System.out.println(t + ": consumed " + consumedCount + " elements " + " in " + time + " ms");
         }
-        time = System.currentTimeMillis() - time;
-        System.out.println("Consumed " + consumedCount + " elements "+ " in " + time + " ms");
     }
 }
