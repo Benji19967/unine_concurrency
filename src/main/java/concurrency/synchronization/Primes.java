@@ -41,22 +41,22 @@ public class Primes {
            }
        }
 
-        // // Ex 1.2
-        // @Override
-        // public void run() {
-        //     int num;
-        //     while (counter < count) {
-        //         synchronized (lock) {
-        //             num = counter;
-        //             counter++;
-        //         }
-        //         if (isPrime(num)) {
-        //             synchronized (lockPrimes) {
-        //                 primeCounter++;
-        //             }
-        //         }
-        //     }
-        // }
+//         // Ex 1.2
+//         @Override
+//         public void run() {
+//             int num;
+//             while (counter < count) {
+//                 synchronized (lock) {
+//                     num = counter;
+//                     counter++;
+//                 }
+//                 if (isPrime(num)) {
+//                     synchronized (lockPrimes) {
+//                         primeCounter++;
+//                     }
+//                 }
+//             }
+//         }
 
         public boolean isPrime(int num) {
             if (num < 2) return false;
@@ -98,30 +98,31 @@ public class Primes {
         System.out.println("t: " + t);
         System.out.println("n: " + n);
 
-        long time = System.currentTimeMillis();
+//        long time = System.currentTimeMillis();
+//        primeCounter = countPrimes(n);
 
         counter = 0;
-        primeCounter = countPrimes(n);
+        primeCounter = 0;
 
-//        int intervalSize = n / t;
-//        int start = 0;
-//        Thread[] threads = new Thread[t];
-//        for (int i = 0; i < t; i++) {
-//            threads[i] = new Thread(new PrimeThread(i, start, start + intervalSize, n));
-//            start += intervalSize;
-//        }
-//        long time = System.currentTimeMillis();
-//        // Start threads
-//        for (int i = 0; i < t; i++) {
-//            threads[i].start();
-//        }
-//        // Wait for threads completion
-//        for (int i = 0; i < t; i++) {
-//            try {
-//                threads[i].join();
-//            } catch (InterruptedException e) {
-//            }
-//        }
+        int intervalSize = n / t;
+        int start = 0;
+        Thread[] threads = new Thread[t];
+        for (int i = 0; i < t; i++) {
+            threads[i] = new Thread(new PrimeThread(i, start, start + intervalSize, n));
+            start += intervalSize;
+        }
+        long time = System.currentTimeMillis();
+        // Start threads
+        for (int i = 0; i < t; i++) {
+            threads[i].start();
+        }
+        // Wait for threads completion
+        for (int i = 0; i < t; i++) {
+            try {
+                threads[i].join();
+            } catch (InterruptedException e) {
+            }
+        }
 
         time = System.currentTimeMillis() - time;
         System.out.println(t + ": found " + primeCounter + " primes " + " in " + time + " ms");
