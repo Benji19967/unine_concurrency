@@ -1,19 +1,19 @@
 package synchronization;
 
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.Math.sqrt;
 
 // TODO try:
 // volatile variables instead of locks
-// Erastosthenes' sieve
 
 public class Primes {
 
-    static int counter;
+    static AtomicInteger counter = new AtomicInteger(0);
     final static Object lock = new Object();
 
-    static int primeCounter;
+    static AtomicInteger primeCounter = new AtomicInteger(0);
     final static Object lockPrimes = new Object();
 
     static class PrimeThread implements Runnable {
@@ -29,34 +29,26 @@ public class Primes {
             this.count = count;
         }
 
-       // Ex 1.1
-       @Override
-       public void run() {
-           for (int i = start; i < end; i++) {
-               if (isPrime(i)) {
-                   synchronized (lockPrimes) {
-                       primeCounter++;
-                   }
-               }
-           }
-       }
+//       // Ex 1.1
+//       @Override
+//       public void run() {
+//           for (int i = start; i < end; i++) {
+//               if (isPrime(i)) {
+//                   primeCounter.getAndIncrement();
+//               }
+//           }
+//       }
 
-//         // Ex 1.2
-//         @Override
-//         public void run() {
-//             int num;
-//             while (counter < count) {
-//                 synchronized (lock) {
-//                     num = counter;
-//                     counter++;
-//                 }
-//                 if (isPrime(num)) {
-//                     synchronized (lockPrimes) {
-//                         primeCounter++;
-//                     }
-//                 }
-//             }
-//         }
+         // Ex 1.2
+         @Override
+         public void run() {
+             int num;
+             while ((num = counter.getAndIncrement()) < count) {
+                 if (isPrime(num)) {
+                     primeCounter.getAndIncrement();
+                 }
+             }
+         }
 
         public boolean isPrime(int num) {
             if (num < 2) return false;
@@ -100,9 +92,6 @@ public class Primes {
 
 //        long time = System.currentTimeMillis();
 //        primeCounter = countPrimes(n);
-
-        counter = 0;
-        primeCounter = 0;
 
         int intervalSize = n / t;
         int start = 0;
