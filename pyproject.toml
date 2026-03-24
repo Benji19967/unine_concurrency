@@ -1,0 +1,31 @@
+[project]
+name = "unine-concurrency"
+version = "0.1.0"
+description = "Python utility scripts"
+requires-python = ">=3.13"
+authors = [
+    { name = "Benjamin Labrecque" }
+]
+
+dependencies = [
+    "polars>=1.39.3",
+    "seaborn>=0.13.2",
+]
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.uv]
+package = true
+
+[dependency-groups]
+dev = [
+    "black>=26.3.1",
+]
