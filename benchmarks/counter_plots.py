@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+import pandas as pd
 import polars as pl
 import seaborn as sns
 
@@ -18,6 +19,9 @@ def main():
     g.set_axis_labels("Duration (s)", "Program")
     plt.savefig(str(PLOTS_DIR / "counters"))
     plt.show()
+
+    df = pd.read_csv(str(BENCHMARKS_FILE))
+    print(df.to_latex(float_format="%.4f", index=False))
 
 
 if __name__ == "__main__":

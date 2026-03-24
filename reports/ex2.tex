@@ -1,0 +1,40 @@
+\documentclass{article}
+\usepackage{booktabs}
+
+
+\begin{document}
+
+\noindent \textbf{Exercise 2.1} \\
+
+
+\begin{tabular}{lrr}
+\toprule
+Program & Threads & Duration \\
+\midrule
+Counter & 2 & 0.3906 \\
+Counter & 4 & 0.5539 \\
+Counter & 8 & 1.8143 \\
+Counter & 16 & 3.5781 \\
+CounterAtomic & 2 & 0.3995 \\
+CounterAtomic & 4 & 0.9018 \\
+CounterAtomic & 8 & 2.8182 \\
+CounterAtomic & 16 & 5.7090 \\
+CounterBakery & 2 & 1.4331 \\
+CounterBakery & 4 & 4.6810 \\
+CounterBakery & 8 & 45.1150 \\
+CounterFilter & 2 & 1.4120 \\
+CounterFilter & 4 & 5.8230 \\
+CounterFilter & 8 & 73.6610 \\
+CounterLock & 2 & 1.4290 \\
+CounterLock & 4 & 0.7995 \\
+CounterLock & 8 & 1.5744 \\
+CounterLock & 16 & 3.1960 \\
+CounterMonitor & 2 & 1.7864 \\
+CounterMonitor & 4 & 4.6900 \\
+CounterMonitor & 8 & 9.6430 \\
+CounterMonitor & 16 & 10.3840 \\
+\bottomrule
+\end{tabular}
+
+
+\end{document}

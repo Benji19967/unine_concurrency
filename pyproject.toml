@@ -8,6 +8,8 @@ authors = [
 ]
 
 dependencies = [
+    "jinja2>=3.1.6",
+    "pandas>=3.0.1",
     "polars>=1.39.3",
     "seaborn>=0.13.2",
 ]
