@@ -3,7 +3,7 @@ package synchronization;
 
 public class ReadWriteLockTest {
 
-    static ReadWriteLock lock = new ReadWriteLock();
+    static ReadWriteLockFIFO lock = new ReadWriteLockFIFO();
     static long counter = 0;
     static long MAX_COUNT = 20;
 
