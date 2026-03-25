@@ -7,6 +7,9 @@ public class ReadWriteLock {
     public synchronized void lockRead() {
         while (writer) {
             try {
+                // Note: spurious wakeups can occur,
+                // (wakeup eventhough notify() and notifyAll() were not called)
+                // (allowed by JVM) so we use a while loop to recheck the condition
                 wait();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt(); 
@@ -27,6 +30,9 @@ public class ReadWriteLock {
     public synchronized void lockWrite() {
         while (numReaders > 0 || writer) {
             try {
+                // Note: spurious wakeups can occur,
+                // (wakeup eventhough notify() and notifyAll() were not called)
+                // (allowed by JVM) so we use a while loop to recheck the condition
                 wait();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt(); 
