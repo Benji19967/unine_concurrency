@@ -1,15 +1,28 @@
 \documentclass{article}
 \usepackage{booktabs}
+\usepackage{graphicx} % needed for \includegraphics
+\usepackage{float} % to use H with figure -- forces to be exactly 'here'
 
+
+\title{Assignment 2}
+\author{Benjamin Labrecque}
+
+\setlength{\parindent}{0pt} % no paragraph indentation
 
 \begin{document}
 
+\maketitle
+
 \noindent \textbf{Exercise 2.1} \\
+
+Execution times for running and incrementing / decrementing a counter with
+a varying number of threads. It should be noted that the \textbf{Counter} 
+program does not finish with the counter set to 0, unlike the other programs, as it does not make use of any synchronization constructs. \\
 
 
 \begin{tabular}{lrr}
 \toprule
-Program & Threads & Duration \\
+Program & Threads & Duration (s) \\
 \midrule
 Counter & 2 & 0.3906 \\
 Counter & 4 & 0.5539 \\
@@ -34,7 +47,95 @@ CounterMonitor & 4 & 4.6900 \\
 CounterMonitor & 8 & 9.6430 \\
 CounterMonitor & 16 & 10.3840 \\
 \bottomrule
-\end{tabular}
+\end{tabular} \\ \\
+
+\begin{figure}[H] % h = place roughly here
+    \centering
+    \includegraphics[width=1\textwidth]{images/counters.png} % path to your image
+    \caption{Execution times for incrementing / decrementing an integer 10'000'000 times. \textbf{CounterBakery} and \textbf{CounterFilter} scale poorly. 
+    Their execution time with 16 threads was not recorded as it would take $>$15 minutes.}
+    \label{fig:example}
+\end{figure}
+
+\noindent \textbf{Exercise 2.2.1 and 2.2.2} \\
+
+Implemented a basic read-write lock which avoids writer starvation. See ReadWriteLock.java
+\\
+
+\noindent \textbf{Exercise 2.2.3} \\
+
+Implemented a read-write lock that respects FIFO order. Is is however not reentrant. See ReadWriteLockFIFO.java
+\\ \\ \\ \\ \\ \\
+
+\noindent \textbf{Exercise 2.3.1.a} \\
+
+\noindent Linearizable: no \\
+Sequentially consistent: yes \\
+
+\noindent A linearizable history: \\
+
+A: r.write(1) \\
+A: r:void \\
+A: r.write(2) \\
+A: r:void \\
+C: r.read() \\
+C: r:2 \\
+A: r.write(1) \\
+A: r:void \\
+C: r.read() \\
+C: r:1 \\
+B: r.read() \\
+B: r:1 \\ \\ \\
+
+\noindent \textbf{Exercise 2.3.1.b} \\
+
+\noindent Linearizable: no \\
+Sequentially consistent: yes \\
+
+\noindent A linearizable history: \\
+
+A: r.write(1) \\
+A: r:void \\
+B: r.read() \\
+B: r:1 \\
+A: r.write(2) \\
+A: r:void \\
+C: r.read() \\
+C: r:2 \\
+A: r.write(1) \\
+A: r:void \\
+
+
+\noindent \textbf{Exercise 2.3.2.a} \\
+
+\noindent Linearizable: yes \\
+Sequentially consistent: yes \\
+
+\noindent \textbf{Exercise 2.3.2.b} \\
+
+\noindent Linearizable: no \\
+Sequentially consistent: no \\
+
+\noindent A linearizable, and therefore also sequentially consistent, history: \\
+
+A: s.push(10) \\
+A: s:void \\
+B: s.push(10) \\
+B: s:void \\
+A: s.pop() \\
+A: s:10 \\
+A: s.pop() \\
+A: s:10 \\
+B: s.empty() \\
+B: s:true \\
+
+\noindent \textbf{Exercise 2.3.3.a} \\
+
+\noindent Linearizable: no \\
+Sequentially consistent: no \\
+
+
+\noindent This sequence is illegal, 'y' is enqueued only once but dequeued twice.
 
 
 \end{document}
