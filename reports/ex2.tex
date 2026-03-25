@@ -64,13 +64,15 @@ Implemented a basic read-write lock which avoids writer starvation. See ReadWrit
 
 \noindent \textbf{Exercise 2.2.3} \\
 
-Implemented a read-write lock that respects FIFO order. Is is however not reentrant. See ReadWriteLockFIFO.java
+Implemented a read-write lock that respects FIFO order. It is however not reentrant. See ReadWriteLockFIFO.java
 \\ \\ \\ \\ \\ \\
+
+For the following exercises I drew an arrow diagram to determine if a linearizable solution could be found. \\
 
 \noindent \textbf{Exercise 2.3.1.a} \\
 
-\noindent Linearizable: no \\
-Sequentially consistent: yes \\
+\noindent Linearizable: no\\
+Sequentially consistent: yes [A:w1, B:r1, A:w2, C:r2, A:w1, C:r1]\\
 
 \noindent A linearizable history: \\
 
@@ -85,31 +87,19 @@ A: r:void \\
 C: r.read() \\
 C: r:1 \\
 B: r.read() \\
-B: r:1 \\ \\ \\
+B: r:1 \\
 
 \noindent \textbf{Exercise 2.3.1.b} \\
 
-\noindent Linearizable: no \\
+\noindent Linearizable: yes \\
 Sequentially consistent: yes \\
-
-\noindent A linearizable history: \\
-
-A: r.write(1) \\
-A: r:void \\
-B: r.read() \\
-B: r:1 \\
-A: r.write(2) \\
-A: r:void \\
-C: r.read() \\
-C: r:2 \\
-A: r.write(1) \\
-A: r:void \\
-
 
 \noindent \textbf{Exercise 2.3.2.a} \\
 
 \noindent Linearizable: yes \\
 Sequentially consistent: yes \\
+
+\newpage
 
 \noindent \textbf{Exercise 2.3.2.b} \\
 

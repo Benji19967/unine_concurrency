@@ -18,7 +18,6 @@ public class ReadWriteLockTest {
         public void run() {
             while (counter < MAX_COUNT) {
                 lock.lockRead();
-                lock.lockRead();
                 System.out.println("r." + id + ": " + counter);
                 try {
                     Thread.sleep(100);
