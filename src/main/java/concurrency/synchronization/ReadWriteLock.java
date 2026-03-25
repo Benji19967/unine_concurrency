@@ -3,9 +3,10 @@ package synchronization;
 public class ReadWriteLock {
     int numReaders = 0;
     boolean writer = false;
+    int waitingWriters = 0;
 
     public synchronized void lockRead() {
-        while (writer) {
+        while (writer || waitingWriters > 0) {
             try {
                 // Note: spurious wakeups can occur,
                 // (wakeup eventhough notify() and notifyAll() were not called)
@@ -28,6 +29,7 @@ public class ReadWriteLock {
     }
 
     public synchronized void lockWrite() {
+        waitingWriters++;
         while (numReaders > 0 || writer) {
             try {
                 // Note: spurious wakeups can occur,
@@ -40,6 +42,7 @@ public class ReadWriteLock {
             }
         } 
         // System.out.println("ACQUIRE WRITE: " + Thread.currentThread().getName());
+        waitingWriters--;
         writer = true;
     }
 
