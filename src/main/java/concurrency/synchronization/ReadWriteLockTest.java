@@ -54,7 +54,7 @@ public class ReadWriteLockTest {
 
     public static void main(String[] args) {
         int numReaders = 10;
-        int numWriters = 1;
+        int numWriters = 2;
 
         Thread[] readers = new Thread[numReaders];
         Thread[] writers = new Thread[numWriters];
