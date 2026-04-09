@@ -12,7 +12,6 @@ public class ProducerConsumer {
         int id;
         int count;
 
-
         public Producer(int id, int count) {
             this.id = id;
             this.count = count;
@@ -55,7 +54,7 @@ public class ProducerConsumer {
     }
 
     public static void main(String[] args) {
-        for (int t : new int[]{1, 2, 4, 8, 16}) {
+        for (int t : new int[] { 1, 2, 4, 8, 16 }) {
             int n = 100_000;
             int numElementsPerThread = n / t;
             Thread[] producers = new Thread[t];
