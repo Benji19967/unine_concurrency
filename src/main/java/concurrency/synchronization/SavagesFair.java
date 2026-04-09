@@ -25,28 +25,28 @@ public class SavagesFair {
             while (true) {
                 // Ticketing system to assure fairness
                 int ticket_number = ticket_and_current.getAndIncrement(0);
-                int current = ticket_and_current.get(1);
 
                 // Busy-wait until it is this thread's turn
-                while (!(ticket_number == current)) {
-                    current = ticket_and_current.get(1);
+                while (ticket_and_current.get(1) != ticket_number) {
                     continue;
                 }
 
                 // Start critical section
+                // System.out.println(id + " start");
                 if (total_portions_eaten >= 5 * num_savages) {
                     ticket_and_current.getAndIncrement(1);
                     return;
                 }
                 if (!is_refilling && pot_counter > 0) {
-                    System.out.println(id + " " + total_portions_eaten);
                     if (Math.floorDiv(total_portions_eaten, num_savages) <= num_times_eaten) {
+                        System.out.println(id + " " + total_portions_eaten);
                         pot_counter--;
                         total_portions_eaten++;
                         num_times_eaten++;
                     }
                 } else if (pot_counter == 0 && !is_refilling)
                     is_refilling = true;
+                // System.out.println(id + " end");
                 ticket_and_current.getAndIncrement(1);
                 // End critical section
             }
