@@ -1,5 +1,11 @@
 package synchronization;
 
+/*
+Use busy-waiting on a lock, and notify cook when refill is required.
+
+Cook and savages eventually each get their turn.
+*/
+
 public class SavagesBasic {
     static int N = 10; // pot capacity
     static int pot_counter = N;

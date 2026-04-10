@@ -2,6 +2,12 @@ package synchronization;
 
 import java.util.concurrent.atomic.AtomicIntegerArray;
 
+/*
+Use a ticketing system--each savage, and the cook, wait until it's their turn. 
+
+This assures fairness and that no thread is starving.
+*/
+
 public class SavagesFair {
     static int N = 10; // pot capacity
     static volatile int pot_counter = N;
