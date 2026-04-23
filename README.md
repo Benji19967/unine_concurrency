@@ -17,7 +17,7 @@ Concurrency: Multi-core Programming and Data Processing at Uni Neuchatel
     │       ├── DiningPhilosophers*.java        # Various solutions to the dining philosophers problem
     │       ├── LockFreeConsensus.java          # Implementation of a consensus algorithm using compare-and-set
     │       ├── ProducerConsumer*.java          # Various solutions to the producer consumer problem
-    │       ├── ReadWriteLock.java              # Various implementations of a read-write lock
+    │       ├── ReadWriteLock*.java              # Various implementations of a read-write lock
     │       └── Savages*.java                   # Various solutions to the savages problem
     │
     └── README.md
