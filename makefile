@@ -5,8 +5,8 @@ compile:
 	javac -d bin src/main/java/concurrency/synchronization/*.java
 	javac -d bin src/main/java/concurrency/mandel/*.java
 
-counter:
+counter: compile
 	java -cp bin synchronization.Counter 2
 
-mandel:
+mandel: compile
 	java -cp bin mandel.Mandel 2
