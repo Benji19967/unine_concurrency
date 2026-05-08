@@ -1,18 +1,18 @@
 package mandel;
 
-import java.applet.Applet;
-
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Image;
+import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import javax.swing.*;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.border.BevelBorder;
+import java.awt.BorderLayout;
 
 public final class Mandel extends JPanel implements MouseListener, MouseMotionListener, KeyListener, Runnable {
     private int maxCount = 192; // maximum number of iterations
@@ -32,6 +32,9 @@ public final class Mandel extends JPanel implements MouseListener, MouseMotionLi
     private int width, height; // current screen width and height
 
     private Thread thread = null; // rendering thread
+
+    private JLabel status;
+    private long time;
 
     private int mouseX, mouseY; // mouse position when the button was pressed
     private int dragX, dragY; // current mouse position during dragging
@@ -106,6 +109,10 @@ public final class Mandel extends JPanel implements MouseListener, MouseMotionLi
         }
     }
 
+    public void updateStatus() {
+        this.status.setText("Time=" + this.time + " ms");
+    }
+
     private static final int[][] rows = {
             { 0, 16, 8 }, { 8, 16, 8 }, { 4, 16, 4 }, { 12, 16, 4 },
             { 2, 16, 2 }, { 10, 16, 2 }, { 6, 16, 2 }, { 14, 16, 2 },
@@ -122,6 +129,8 @@ public final class Mandel extends JPanel implements MouseListener, MouseMotionLi
             image = createImage(width, height);
             graphics = image.getGraphics();
         }
+
+
         // fractal image pre-drawing
         for (int y = 0; y < height + 4; y += 8) {
             if (Thread.interrupted())
@@ -136,6 +145,8 @@ public final class Mandel extends JPanel implements MouseListener, MouseMotionLi
             }
         }
         repaint();
+
+        this.time = System.currentTimeMillis();
         // fractal image drawing
         for (int row = 0; row < rows.length; row++) {
             for (int y = rows[row][0]; y < height; y += rows[row][1]) {
@@ -164,6 +175,9 @@ public final class Mandel extends JPanel implements MouseListener, MouseMotionLi
             }
             repaint();
         }
+
+        this.time = System.currentTimeMillis() - this.time;
+        this.updateStatus();
         return false;
     }
 
@@ -341,7 +355,16 @@ public final class Mandel extends JPanel implements MouseListener, MouseMotionLi
 
     public static void main(String[] args) {
         javax.swing.JFrame frame = new javax.swing.JFrame("Mandelbrot Explorer");
+        frame.setLayout(new BorderLayout());
+
         Mandel mandel = new Mandel();
+        mandel.status = new JLabel("Starting up...");
+        mandel.status.setBorder(new BevelBorder(BevelBorder.LOWERED));
+
+        // Add components to the frame
+        frame.add(mandel, BorderLayout.CENTER);
+        frame.add(mandel.status, BorderLayout.SOUTH);
+
         frame.add(mandel);
         frame.setSize(800, 600);
         frame.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
