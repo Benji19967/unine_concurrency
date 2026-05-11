@@ -93,14 +93,6 @@ public class PixelPainter {
         return color;
     }
 
-    public Color getColorNormal(int x, int y) {
-        double r = zoom / Math.min(width, height);
-        double dx = 2.5 * (x * r + viewX) - 2;
-        double dy = 1.25 - 2.5 * (y * r + viewY);
-        Color color = color(dx, dy);
-        return color;
-    }
-
     // Computes a color for a given point
     private Color color(double x, double y) {
         int count = mandel(0.0, 0.0, x, y);

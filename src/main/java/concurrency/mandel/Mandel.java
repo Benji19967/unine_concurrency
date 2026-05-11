@@ -15,7 +15,7 @@ import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 import java.awt.BorderLayout;
 
-public final class Mandel extends JPanel implements MouseListener, MouseMotionListener, KeyListener, Runnable {
+public final class Mandel extends JPanel implements MouseListener, MouseMotionListener, KeyListener {
     private boolean smooth = false; // smoothing state
     private boolean antialias = false; // antialias state
     private boolean toDrag = false; // dragging state
@@ -30,8 +30,6 @@ public final class Mandel extends JPanel implements MouseListener, MouseMotionLi
     private Graphics graphics; // offscreen graphics for the offscreen image
     private int width, height; // current screen width and height
 
-    private Thread thread = null; // rendering thread
-
     private JLabel status;
     private long time;
 
@@ -42,45 +40,19 @@ public final class Mandel extends JPanel implements MouseListener, MouseMotionLi
     private final ExecutorService pool = Executors.newFixedThreadPool(nThreads);
     private final PixelPainter pixelPainter = new PixelPainter(height, width);
 
-    public void run() {
-        while (thread != null) {
-            while (draw())
-                ;
-            synchronized (this) {
-                try {
-                    wait();
-                } catch (InterruptedException e) {
-                }
-            }
-        }
-    }
-
     public void init() {
         addMouseListener(this);
         addMouseMotionListener(this);
         addKeyListener(this);
         pixelPainter.initColorPalettes();
-        thread = null;
     }
 
     public void start() {
         redraw();
     }
 
-    public void destroy() {
-        Thread t = thread;
-        thread = null;
-        t.interrupt();
-    }
-
     private void redraw() {
-        if (thread != null && thread.isAlive()) {
-            thread.interrupt();
-        } else {
-            thread = new Thread(this);
-            thread.setPriority(Thread.MIN_PRIORITY);
-            thread.start();
-        }
+        this.draw();
     }
 
     public void updateStatus() {
