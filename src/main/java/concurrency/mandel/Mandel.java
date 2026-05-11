@@ -149,16 +149,23 @@ public final class Mandel extends JPanel implements MouseListener, MouseMotionLi
 
         this.time = System.currentTimeMillis();
         // fractal image drawing
+        Color[][] pixels = new Color[height][width];
         for (int y = 0; y < height; y++) {
             if (Thread.interrupted())
                 return true;
             for (int x = 0; x < width; x++) {
                 Color color = getColor(x, y);
-                graphics.setColor(color);
-                graphics.drawLine(x, y, x, y);
+                pixels[y][x] = color;
             }
         }
         this.time = System.currentTimeMillis() - this.time;
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                graphics.setColor(pixels[y][x]);
+                graphics.drawLine(x, y, x, y);
+            }
+        }
 
         this.repaint();
         this.updateStatus();
