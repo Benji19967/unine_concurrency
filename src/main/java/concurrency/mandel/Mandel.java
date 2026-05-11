@@ -7,8 +7,9 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import javax.swing.*;
-import javax.swing.JFrame;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
@@ -22,6 +23,7 @@ public final class Mandel extends JPanel implements MouseListener, MouseMotionLi
     private boolean rect = true; // zooming or moving mode for dragging
     private Color[][] colors; // palettes
     private int pal = 0; // current palette
+
     // currently visible relative window dimensions
     private double viewX = 0.0;
     private double viewY = 0.0;
@@ -49,6 +51,9 @@ public final class Mandel extends JPanel implements MouseListener, MouseMotionLi
             { { 12, 0, 0, 64 }, { 12, 0, 0, 255 }, { 10, 0, 255, 255 }, { 12, 128, 255, 255 }, { 14, 64, 128, 255 } },
             { { 16, 0, 0, 0 }, { 32, 255, 255, 255 } },
     };
+
+    private final int nThreads = 4;
+    private final ExecutorService pool = Executors.newFixedThreadPool(nThreads);
 
     public void run() {
         while (thread != null) {
@@ -130,16 +135,12 @@ public final class Mandel extends JPanel implements MouseListener, MouseMotionLi
             graphics = image.getGraphics();
         }
 
-
         // fractal image pre-drawing
         for (int y = 0; y < height + 4; y += 8) {
             if (Thread.interrupted())
                 return true;
             for (int x = 0; x < width + 4; x += 8) {
-                double r = zoom / Math.min(width, height);
-                double dx = 2.5 * (x * r + viewX) - 2;
-                double dy = 1.25 - 2.5 * (y * r + viewY);
-                Color color = color(dx, dy);
+                Color color = getColorNormal(x, y);
                 graphics.setColor(color);
                 graphics.fillRect(x - 4, y - 4, 8, 8);
             }
@@ -153,22 +154,7 @@ public final class Mandel extends JPanel implements MouseListener, MouseMotionLi
                 if (Thread.interrupted())
                     return true;
                 for (int x = 0; x < width; x++) {
-                    double r = zoom / Math.min(width, height);
-                    double dx = 2.5 * (x * r + viewX) - 2;
-                    double dy = 1.25 - 2.5 * (y * r + viewY);
-                    Color color = color(dx, dy);
-                    // computation of average color for antialiasing
-                    if (antialias) {
-                        Color c1 = color(dx - 0.25 * r, dy - 0.25 * r);
-                        Color c2 = color(dx + 0.25 * r, dy - 0.25 * r);
-                        Color c3 = color(dx + 0.25 * r, dy + 0.25 * r);
-                        Color c4 = color(dx - 0.25 * r, dy + 0.25 * r);
-                        int red = (color.getRed() + c1.getRed() + c2.getRed() + c3.getRed() + c4.getRed()) / 5;
-                        int green = (color.getGreen() + c1.getGreen() + c2.getGreen() + c3.getGreen() + c4.getGreen())
-                                / 5;
-                        int blue = (color.getBlue() + c1.getBlue() + c2.getBlue() + c3.getBlue() + c4.getBlue()) / 5;
-                        color = new Color(red, green, blue);
-                    }
+                    Color color = getColor(x, y);
                     graphics.setColor(color);
                     graphics.fillRect(x, y - rows[row][2] / 2, 1, rows[row][2]);
                 }
@@ -179,6 +165,35 @@ public final class Mandel extends JPanel implements MouseListener, MouseMotionLi
         this.time = System.currentTimeMillis() - this.time;
         this.updateStatus();
         return false;
+    }
+
+    private Color getColorNormal(int x, int y) {
+        double r = zoom / Math.min(width, height);
+        double dx = 2.5 * (x * r + viewX) - 2;
+        double dy = 1.25 - 2.5 * (y * r + viewY);
+        Color color = color(dx, dy);
+        return color;
+    }
+
+    // gets a color for a specific pixel
+    private Color getColor(int x, int y) {
+        double r = zoom / Math.min(width, height);
+        double dx = 2.5 * (x * r + viewX) - 2;
+        double dy = 1.25 - 2.5 * (y * r + viewY);
+        Color color = color(dx, dy);
+        // computation of average color for antialiasing
+        if (antialias) {
+            Color c1 = color(dx - 0.25 * r, dy - 0.25 * r);
+            Color c2 = color(dx + 0.25 * r, dy - 0.25 * r);
+            Color c3 = color(dx + 0.25 * r, dy + 0.25 * r);
+            Color c4 = color(dx - 0.25 * r, dy + 0.25 * r);
+            int red = (color.getRed() + c1.getRed() + c2.getRed() + c3.getRed() + c4.getRed()) / 5;
+            int green = (color.getGreen() + c1.getGreen() + c2.getGreen() + c3.getGreen() + c4.getGreen())
+                    / 5;
+            int blue = (color.getBlue() + c1.getBlue() + c2.getBlue() + c3.getBlue() + c4.getBlue()) / 5;
+            color = new Color(red, green, blue);
+        }
+        return color;
     }
 
     // Computes a color for a given point
