@@ -156,7 +156,7 @@ public final class Mandel extends JPanel implements MouseListener, MouseMotionLi
                 for (int x = 0; x < width; x++) {
                     Color color = getColor(x, y);
                     graphics.setColor(color);
-                    graphics.fillRect(x, y - rows[row][2] / 2, 1, rows[row][2]);
+                    graphics.drawLine(x, y, x, y);
                 }
             }
             repaint();
