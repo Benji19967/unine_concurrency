@@ -149,8 +149,6 @@ public final class Mandel extends JPanel implements MouseListener, MouseMotionLi
 
         this.time = System.currentTimeMillis();
         // fractal image drawing
-//        for (int row = 0; row < rows.length; row++) {
-//            for (int y = rows[row][0]; y < height; y += rows[row][1]) {
         for (int y = 0; y < height; y++) {
             if (Thread.interrupted())
                 return true;
@@ -159,11 +157,12 @@ public final class Mandel extends JPanel implements MouseListener, MouseMotionLi
                 graphics.setColor(color);
                 graphics.drawLine(x, y, x, y);
             }
-            repaint();
         }
-
         this.time = System.currentTimeMillis() - this.time;
+
+        this.repaint();
         this.updateStatus();
+
         return false;
     }
 
