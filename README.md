@@ -23,7 +23,7 @@ Concurrency: Multi-core Programming and Data Processing at Uni Neuchatel
     └── README.md
 
 
-## Mini-Project: Parallel Fractal Generatioin – Mandelbrot Set
+## Mini-Project: Parallel Fractal Generation – Mandelbrot Set
 
 ### Getting started
 
