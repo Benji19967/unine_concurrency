@@ -21,3 +21,16 @@ Concurrency: Multi-core Programming and Data Processing at Uni Neuchatel
     │       └── Savages*.java                   # Various solutions to the savages problem
     │
     └── README.md
+
+
+## Mini-Project: Parallel Fractal Generatioin – Mandelbrot Set
+
+### Getting started
+
+```
+make mandel
+```
+
+### Demo
+
+![Demo](assets/4_threads_fast.gif)

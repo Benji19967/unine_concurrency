@@ -60,7 +60,7 @@ public final class Mandel extends JPanel implements MouseListener, MouseMotionLi
     }
 
     public void updateStatus() {
-        this.status.setText("Time=" + this.time + " ms");
+        this.status.setText("Num threads: " + nThreads + " Time=" + this.time + " ms");
     }
 
     private boolean draw() {
