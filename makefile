@@ -9,4 +9,4 @@ counter: compile
 	java -cp bin synchronization.Counter 2
 
 mandel: compile
-	java -cp bin mandel.Mandel 2
+	java -cp bin mandel.Mandel $(NUM_THREADS)

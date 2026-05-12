@@ -9,16 +9,18 @@ Concurrency: Multi-core Programming and Data Processing at Uni Neuchatel
     │   
     ├── benchmarks              # Benchmarks for different counter implementations
     │   
-    ├── reports                 # Exercises reports
+    ├── reports                 # Exercises and mini-project reports
     │
     ├── src
-    │   └── main / java / concurrency / synchronization
+    │   ├── main / java / concurrency / synchronization
     │       ├── Counter*.java                   # Concurrent algorithms for implementing counters
     │       ├── DiningPhilosophers*.java        # Various solutions to the dining philosophers problem
     │       ├── LockFreeConsensus.java          # Implementation of a consensus algorithm using compare-and-set
     │       ├── ProducerConsumer*.java          # Various solutions to the producer consumer problem
     │       ├── ReadWriteLock*.java             # Various implementations of a read-write lock
     │       └── Savages*.java                   # Various solutions to the savages problem
+    │   │
+    │   └── main / java / concurrency / mandel  # Parallel fractal generation -- Mandelbrot Set
     │
     └── README.md
 
@@ -28,8 +30,11 @@ Concurrency: Multi-core Programming and Data Processing at Uni Neuchatel
 ### Getting started
 
 ```
-make mandel
+make mandel NUM_THREADS=4
 ```
+### Report
+
+[Parallel Fractal Generation - Mandelbrot Set](reports/mini-project.pdf)
 
 ### Demo
 

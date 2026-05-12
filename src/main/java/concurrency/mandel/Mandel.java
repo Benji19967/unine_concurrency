@@ -40,15 +40,17 @@ public final class Mandel extends JPanel implements MouseListener, MouseMotionLi
     private int dragX, dragY; // current mouse position during dragging
 
     private Color[][] colors; // palettes
-    private final int nThreads = 4;
+    private int nThreads;
     private final ColorManager colorManager = new ColorManager();
-    private final ExecutorService pool = Executors.newFixedThreadPool(nThreads);
+    private ExecutorService pool;
 
-    public void init() {
+    public void init(int nThreads) {
         addMouseListener(this);
         addMouseMotionListener(this);
         addKeyListener(this);
         colors = colorManager.initColorPalettes();
+        this.nThreads = nThreads;
+        pool = Executors.newFixedThreadPool(nThreads);
     }
 
     public void start() {
@@ -259,7 +261,11 @@ public final class Mandel extends JPanel implements MouseListener, MouseMotionLi
         frame.setSize(800, 600);
         frame.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
-        mandel.init();
+
+        int nThreads = (args.length >= 1 ? Integer.parseInt(args[0]) : 4);
+        System.out.println(nThreads);
+
+        mandel.init(nThreads);
         mandel.start();
     }
 }
