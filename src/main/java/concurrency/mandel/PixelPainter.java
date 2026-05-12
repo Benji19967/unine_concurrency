@@ -1,24 +1,17 @@
 package mandel;
 
 import java.awt.*;
+import java.util.concurrent.CountDownLatch;
 
-public class PixelPainter {
+public class PixelPainter implements Runnable {
     private int maxCount = 192; // maximum number of iterations
     private boolean smooth = false;
     private boolean antialias = false;
 
-    private Color[][] colors; // palettes
     private int pal = 0; // current palette
-    private static final int[][][] colpal = { // palette colors
-            { { 12, 0, 10, 20 }, { 12, 50, 100, 240 }, { 12, 20, 3, 26 }, { 12, 230, 60, 20 },
-                    { 12, 25, 10, 9 }, { 12, 230, 170, 0 }, { 12, 20, 40, 10 }, { 12, 0, 100, 0 },
-                    { 12, 5, 10, 10 }, { 12, 210, 70, 30 }, { 12, 90, 0, 50 }, { 12, 180, 90, 120 },
-                    { 12, 0, 20, 40 }, { 12, 30, 70, 200 } },
-            { { 10, 70, 0, 20 }, { 10, 100, 0, 100 }, { 14, 255, 0, 0 }, { 10, 255, 200, 0 } },
-            { { 8, 40, 70, 10 }, { 9, 40, 170, 10 }, { 6, 100, 255, 70 }, { 8, 255, 255, 255 } },
-            { { 12, 0, 0, 64 }, { 12, 0, 0, 255 }, { 10, 0, 255, 255 }, { 12, 128, 255, 255 }, { 14, 64, 128, 255 } },
-            { { 16, 0, 0, 0 }, { 32, 255, 255, 255 } },
-    };
+
+    private Color[][] pixels;
+    private Color[][] colors;
 
     private int width, height; // current screen width and height
 
@@ -27,47 +20,39 @@ public class PixelPainter {
     private double viewY = 0.0;
     private double zoom = 1.0;
 
-    public PixelPainter(int height, int width) {
+    CountDownLatch latch;
+
+    // rows for current thread
+    int startY;
+    int endY;
+
+    public PixelPainter(int startY, int endY, int height, int width, Color[][] colors, Color[][] pixels, int maxCount, double viewX, double viewY, double zoom, CountDownLatch latch) {
+        this.startY = startY;
+        this.endY = endY;
         this.height = height;
         this.width = width;
-    }
-
-    public void nextPal() {
-        pal = (pal + 1) % colors.length;
-    }
-
-    public void updateMaxCount() {
-        maxCount += maxCount / 4; // increase the number of iterations by 1/4
-    }
-
-    public void setViewsAndZoom(double viewX, double viewY, double zoom) {
+        this.colors = colors;
+        this.pixels = pixels;
+        this.maxCount = maxCount;
         this.viewX = viewX;
         this.viewY = viewY;
         this.zoom = zoom;
+        this.latch = latch;
     }
 
-    public void setWidthAndHeight(int width, int height) {
-        this.width = width;
-        this.height = height;
+    @Override
+    public void run() {
+        paintPixels();
+        if (latch != null) {
+            latch.countDown();
+        }
     }
 
-    public void initColorPalettes() {
-        colors = new Color[colpal.length][];
-        for (int p = 0; p < colpal.length; p++) { // process all palettes
-            int n = 0;
-            for (int i = 0; i < colpal[p].length; i++) // get the number of all colors
-                n += colpal[p][i][0];
-            colors[p] = new Color[n]; // allocate pallete
-            n = 0;
-            for (int i = 0; i < colpal[p].length; i++) { // interpolate all colors
-                int[] c1 = colpal[p][i]; // first referential color
-                int[] c2 = colpal[p][(i + 1) % colpal[p].length]; // second ref. color
-                for (int j = 0; j < c1[0]; j++) // linear interpolation of RGB values
-                    colors[p][n + j] = new Color(
-                            (c1[1] * (c1[0] - 1 - j) + c2[1] * j) / (c1[0] - 1),
-                            (c1[2] * (c1[0] - 1 - j) + c2[2] * j) / (c1[0] - 1),
-                            (c1[3] * (c1[0] - 1 - j) + c2[3] * j) / (c1[0] - 1));
-                n += c1[0];
+    public void paintPixels() {
+        for (int y = startY; y < endY; y++) {
+            for (int x = 0; x < width; x++) {
+                Color color = getColor(x, y);
+                pixels[y][x] = color;
             }
         }
     }

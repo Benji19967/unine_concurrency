@@ -7,6 +7,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -16,10 +17,12 @@ import javax.swing.border.BevelBorder;
 import java.awt.BorderLayout;
 
 public final class Mandel extends JPanel implements MouseListener, MouseMotionListener, KeyListener {
+    private int maxCount = 192; // maximum number of iterations
     private boolean smooth = false; // smoothing state
     private boolean antialias = false; // antialias state
     private boolean toDrag = false; // dragging state
     private boolean rect = true; // zooming or moving mode for dragging
+    private int pal = 0; // current palette
 
     // currently visible relative window dimensions
     private double viewX = 0.0;
@@ -36,15 +39,16 @@ public final class Mandel extends JPanel implements MouseListener, MouseMotionLi
     private int mouseX, mouseY; // mouse position when the button was pressed
     private int dragX, dragY; // current mouse position during dragging
 
+    private Color[][] colors; // palettes
     private final int nThreads = 4;
+    private final ColorManager colorManager = new ColorManager();
     private final ExecutorService pool = Executors.newFixedThreadPool(nThreads);
-    private final PixelPainter pixelPainter = new PixelPainter(height, width);
 
     public void init() {
         addMouseListener(this);
         addMouseMotionListener(this);
         addKeyListener(this);
-        pixelPainter.initColorPalettes();
+        colors = colorManager.initColorPalettes();
     }
 
     public void start() {
@@ -69,18 +73,27 @@ public final class Mandel extends JPanel implements MouseListener, MouseMotionLi
             graphics = image.getGraphics();
         }
 
-        pixelPainter.setWidthAndHeight(width, height);
-        pixelPainter.setViewsAndZoom(viewX, viewY, zoom);
-
         // fractal image drawing
         this.time = System.currentTimeMillis();
         Color[][] pixels = new Color[height][width];
-        for (int y = 0; y < height; y++) {
-            if (Thread.interrupted())
-                return true;
-            for (int x = 0; x < width; x++) {
-                Color color = pixelPainter.getColor(x, y);
-                pixels[y][x] = color;
+        if (nThreads == 1) {
+            PixelPainter pixelPainter = new PixelPainter(0, height, height, width, colors, pixels, maxCount, viewX, viewY, zoom, null);
+            pixelPainter.paintPixels();
+        }
+        else {
+            CountDownLatch latch = new CountDownLatch(nThreads);
+            int startY;
+            int endY;
+            int nRowsPerThread = height / nThreads;
+            for (int i = 0; i < nThreads; i++) {
+                startY = i * nRowsPerThread;
+                endY = i == nThreads - 1 ? height : Math.min(startY + nRowsPerThread, height);
+                pool.execute(new PixelPainter(startY, endY, height, width, colors, pixels, maxCount, viewX, viewY, zoom, latch));
+            }
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
         }
         this.time = System.currentTimeMillis() - this.time;
@@ -160,7 +173,7 @@ public final class Mandel extends JPanel implements MouseListener, MouseMotionLi
             }
             redraw(); // recompute and repaint
         } else if ((e.getModifiers() & InputEvent.BUTTON3_MASK) != 0) { // RMB
-            pixelPainter.updateMaxCount();
+            maxCount += maxCount / 4; // increase the number of iterations by 1/4
             redraw(); // recompute and repaint
         }
     }
@@ -205,8 +218,7 @@ public final class Mandel extends JPanel implements MouseListener, MouseMotionLi
             zoom *= 2.0;
             redraw(); // recompute and repaint
         } else if (e.getKeyCode() == KeyEvent.VK_P) { // next palette
-            pixelPainter.nextPal();
-            redraw(); // recompute and repaint
+            pal = (pal + 1) % colors.length;            redraw(); // recompute and repaint
         } else if (e.getKeyCode() == KeyEvent.VK_S) { // smoothing
             smooth = !smooth;
             redraw(); // recompute and repaint
